@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useUser } from "@clerk/clerk-react";
+import FileUpload from '../components/FileUpload';
 
 const actions = [
   { label: 'Upload File', icon: '⬆️', tab: '' },
@@ -10,6 +11,7 @@ const actions = [
 
 const Dashboard = () => {
   const { user } = useUser();
+  const [tableData, setTableData] = useState([]);
 
   // For now, just log the action. Later, this will change the dashboard tab.
   const handleAction = (tab) => {
@@ -54,6 +56,24 @@ const Dashboard = () => {
             {/* Placeholder for main dashboard content (file upload, charts, etc.) */}
             Select an action above to get started.
           </div>
+        </div>
+        <div className="mt-8">
+          <FileUpload onDataParsed={setTableData} />
+          {tableData.length > 0 && (
+            <div className="overflow-x-auto mt-6 bg-white/80 rounded-lg shadow p-4">
+              <table className="min-w-full text-sm">
+                <tbody>
+                  {tableData.map((row, i) => (
+                    <tr key={i}>
+                      {row.map((cell, j) => (
+                        <td key={j} className="border px-2 py-1">{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </div>
