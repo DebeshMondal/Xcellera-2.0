@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useUser } from "@clerk/clerk-react";
 import FileUpload from '../components/FileUpload';
 
@@ -12,13 +12,14 @@ const actions = [
 const Dashboard = () => {
   const { user } = useUser();
   const [tableData, setTableData] = useState([]);
+  const fileUploadRef = useRef();
 
-  // For now, just log the action. Later, this will change the dashboard tab.
   const handleAction = (tab) => {
-    if (tab) {
-      window.location.search = `?tab=${tab}`;
+    if (tab === '') {
+      // Trigger file input click
+      fileUploadRef.current.openFileDialog();
     } else {
-      window.location.search = '';
+      window.location.search = `?tab=${tab}`;
     }
   };
 
@@ -58,7 +59,7 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="mt-8">
-          <FileUpload onDataParsed={setTableData} />
+          <FileUpload ref={fileUploadRef} onDataParsed={setTableData} />
           {tableData.length > 0 && (
             <div className="overflow-x-auto mt-6 bg-white/80 rounded-lg shadow p-4">
               <table className="min-w-full text-sm">

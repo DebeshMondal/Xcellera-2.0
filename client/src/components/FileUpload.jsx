@@ -1,10 +1,16 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import * as XLSX from 'xlsx';
 
-const FileUpload = ({ onDataParsed }) => {
+const FileUpload = forwardRef(({ onDataParsed }, ref) => {
   const fileInputRef = useRef();
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
+
+  useImperativeHandle(ref, () => ({
+    openFileDialog: () => {
+      fileInputRef.current.click();
+    }
+  }));
 
   const handleFileChange = (e) => {
     setError('');
@@ -41,6 +47,6 @@ const FileUpload = ({ onDataParsed }) => {
       {error && <span className="text-sm text-red-500">{error}</span>}
     </div>
   );
-};
+});
 
 export default FileUpload;
