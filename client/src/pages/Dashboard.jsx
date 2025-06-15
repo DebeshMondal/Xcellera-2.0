@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useUser } from "@clerk/clerk-react";
 import FileUpload from '../components/FileUpload';
+import DataChart from '../components/DataChart';
 
 const actions = [
   { label: 'Upload File', icon: '⬆️', tab: '' },
@@ -75,6 +76,7 @@ const Dashboard = () => {
               </table>
             </div>
           )}
+          {tableData.length > 1 && <DataChart tableData={tableData} />}
         </div>
       </div>
     </div>
