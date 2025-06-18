@@ -1,0 +1,15 @@
+# Environment
+.env
+.env.*
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE/editor
+.vscode/
+.idea/
+
+# General temp files
+*.log
+logs/
