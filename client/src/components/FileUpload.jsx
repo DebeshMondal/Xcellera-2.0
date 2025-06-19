@@ -1,10 +1,13 @@
 import React, { useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import * as XLSX from 'xlsx';
+import axios from 'axios';
+import { useUser } from '@clerk/clerk-react';
 
 const FileUpload = forwardRef(({ onDataParsed }, ref) => {
   const fileInputRef = useRef();
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState('');
+  const { user } = useUser();
 
   useImperativeHandle(ref, () => ({
     openFileDialog: () => {
@@ -27,6 +30,30 @@ const FileUpload = forwardRef(({ onDataParsed }, ref) => {
         const worksheet = workbook.Sheets[sheetName];
         const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
         onDataParsed(json);
+
+        // POST to backend
+        const postData = async () => {
+          try {
+            console.log('Posting to backend...', {
+              fileName: file.name,
+              data: json.slice(1),
+              headers: json[0],
+              uploadedBy: user?.primaryEmailAddress?.emailAddress || user?.emailAddress || 'anonymous'
+            });
+            const res = await axios.post('http://localhost:5000/api/excel', {
+              fileName: file.name,
+              data: json.slice(1),
+              headers: json[0],
+              uploadedBy: user?.primaryEmailAddress?.emailAddress || user?.emailAddress || 'anonymous'
+            });
+            console.log('Backend response:', res.data);
+            alert('File uploaded and saved to backend!');
+          } catch (err) {
+            console.error('Backend error:', err);
+            alert('Failed to save data to backend.');
+          }
+        };
+        postData();
       } catch (err) {
         setError('Failed to parse file. Please upload a valid Excel file.');
       }
