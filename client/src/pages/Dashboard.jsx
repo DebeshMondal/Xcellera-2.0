@@ -1,7 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useUser } from "@clerk/clerk-react";
+import { useSearchParams } from 'react-router-dom';
 import FileUpload from '../components/FileUpload';
 import DataChart from '../components/DataChart';
+import UploadHistory from '../components/UploadHistory';
 
 const actions = [
   { label: 'Upload File', icon: '⬆️', tab: '' },
@@ -13,14 +15,67 @@ const actions = [
 const Dashboard = () => {
   const { user } = useUser();
   const [tableData, setTableData] = useState([]);
+  const [searchParams, setSearchParams] = useSearchParams();
   const fileUploadRef = useRef();
+
+  const currentTab = searchParams.get('tab') || '';
 
   const handleAction = (tab) => {
     if (tab === '') {
-      // Trigger file input click
-      fileUploadRef.current.openFileDialog();
+      // Trigger file input click from any tab
+      if (fileUploadRef.current) {
+        fileUploadRef.current.openFileDialog();
+      }
+      setSearchParams({});
     } else {
-      window.location.search = `?tab=${tab}`;
+      setSearchParams({ tab });
+    }
+  };
+
+  const handleSelectFile = (data) => {
+    setTableData(data);
+    setSearchParams({}); // Switch back to main view
+  };
+
+  const renderContent = () => {
+    switch (currentTab) {
+      case 'history':
+        return <UploadHistory onSelectFile={handleSelectFile} />;
+      case 'charts':
+        return tableData.length > 1 ? (
+          <DataChart tableData={tableData} />
+        ) : (
+          <div className="bg-white/80 rounded-lg shadow p-6 text-center">
+            <p className="text-gray-600">Upload a file first to view charts</p>
+          </div>
+        );
+      case 'download':
+        return (
+          <div className="bg-white/80 rounded-lg shadow p-6 text-center">
+            <p className="text-gray-600">Download feature coming soon!</p>
+          </div>
+        );
+      default:
+        return (
+          <>
+            {tableData.length > 0 && (
+              <div className="overflow-x-auto mt-6 bg-white/80 rounded-lg shadow p-4">
+                <table className="min-w-full text-sm">
+                  <tbody>
+                    {tableData.map((row, i) => (
+                      <tr key={i}>
+                        {row.map((cell, j) => (
+                          <td key={j} className="border px-2 py-1">{cell}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {tableData.length > 1 && <DataChart tableData={tableData} />}
+          </>
+        );
     }
   };
 
@@ -43,7 +98,11 @@ const Dashboard = () => {
                 <button
                   key={action.label}
                   onClick={() => handleAction(action.tab)}
-                  className="flex items-center gap-2 px-5 py-2 bg-white/80 rounded-lg shadow hover:bg-blue-200 hover:scale-105 transition text-blue-700 font-semibold text-base"
+                  className={`flex items-center gap-2 px-5 py-2 rounded-lg shadow hover:scale-105 transition font-semibold text-base ${
+                    currentTab === action.tab 
+                      ? 'bg-blue-200 text-blue-700' 
+                      : 'bg-white/80 text-blue-700 hover:bg-blue-200'
+                  }`}
                 >
                   <span>{action.icon}</span> {action.label}
                 </button>
@@ -51,32 +110,16 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        {/* Section headers for future content */}
+        {/* Main content area */}
         <div className="mt-12 animate-fade-in-up">
-          <h3 className="text-lg font-bold text-white mb-4 drop-shadow">Your Dashboard</h3>
-          <div className="rounded-xl bg-white/70 shadow p-6 min-h-[200px] flex items-center justify-center text-gray-400">
-            {/* Placeholder for main dashboard content (file upload, charts, etc.) */}
-            Select an action above to get started.
-          </div>
-        </div>
-        <div className="mt-8">
-          <FileUpload ref={fileUploadRef} onDataParsed={setTableData} />
-          {tableData.length > 0 && (
-            <div className="overflow-x-auto mt-6 bg-white/80 rounded-lg shadow p-4">
-              <table className="min-w-full text-sm">
-                <tbody>
-                  {tableData.map((row, i) => (
-                    <tr key={i}>
-                      {row.map((cell, j) => (
-                        <td key={j} className="border px-2 py-1">{cell}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          {currentTab === '' && (
+            <h3 className="text-lg font-bold text-white mb-4 drop-shadow">Your Dashboard</h3>
           )}
-          {tableData.length > 1 && <DataChart tableData={tableData} />}
+          {renderContent()}
+        </div>
+        {/* Always render FileUpload component (hidden when not needed) */}
+        <div className="hidden">
+          <FileUpload ref={fileUploadRef} onDataParsed={setTableData} />
         </div>
       </div>
     </div>
