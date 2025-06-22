@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useImperativeHandle } from 'react';
 import { Bar, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -28,7 +28,7 @@ const chartTypes = [
   { label: 'Line', value: 'line' },
 ];
 
-const DataChart = ({ tableData }) => {
+const DataChart = React.forwardRef(({ tableData }, ref) => {
   if (!tableData || tableData.length < 2) return null;
 
   const headers = tableData[0];
@@ -40,6 +40,12 @@ const DataChart = ({ tableData }) => {
 
   const xIndex = headers.indexOf(xCol);
   const yIndex = headers.indexOf(yCol);
+
+  const chartRef = useRef(null);
+
+  useImperativeHandle(ref, () => ({
+    getChart: () => chartRef.current,
+  }));
 
   // Data validation for Y-axis
   const yValues = rows.map(row => Number(row[yIndex]));
@@ -91,12 +97,12 @@ const DataChart = ({ tableData }) => {
         </div>
       </div>
       {chartType === 'bar' ? (
-        <Bar data={chartData} options={{ responsive: true, plugins: { legend: { display: true } } }} />
+        <Bar ref={chartRef} data={chartData} options={{ responsive: true, plugins: { legend: { display: true } } }} />
       ) : (
-        <Line data={chartData} options={{ responsive: true, plugins: { legend: { display: true } } }} />
+        <Line ref={chartRef} data={chartData} options={{ responsive: true, plugins: { legend: { display: true } } }} />
       )}
     </div>
   );
-};
+});
 
 export default DataChart;

@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import FileUpload from '../components/FileUpload';
 import DataChart from '../components/DataChart';
 import UploadHistory from '../components/UploadHistory';
+import DownloadTab from '../components/DownloadTab';
 
 const actions = [
   { label: 'Upload File', icon: '⬆️', tab: '' },
@@ -17,6 +18,7 @@ const Dashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
   const fileUploadRef = useRef();
+  const chartRef = useRef();
 
   const currentTab = searchParams.get('tab') || '';
 
@@ -43,18 +45,14 @@ const Dashboard = () => {
         return <UploadHistory onSelectFile={handleSelectFile} />;
       case 'charts':
         return tableData.length > 1 ? (
-          <DataChart tableData={tableData} />
+          <DataChart ref={chartRef} tableData={tableData} />
         ) : (
           <div className="bg-white/80 rounded-lg shadow p-6 text-center">
             <p className="text-gray-600">Upload a file first to view charts</p>
           </div>
         );
       case 'download':
-        return (
-          <div className="bg-white/80 rounded-lg shadow p-6 text-center">
-            <p className="text-gray-600">Download feature coming soon!</p>
-          </div>
-        );
+        return <DownloadTab chartRef={chartRef} />;
       default:
         return (
           <>
@@ -73,7 +71,7 @@ const Dashboard = () => {
                 </table>
               </div>
             )}
-            {tableData.length > 1 && <DataChart tableData={tableData} />}
+            {tableData.length > 1 && <DataChart ref={chartRef} tableData={tableData} />}
           </>
         );
     }
