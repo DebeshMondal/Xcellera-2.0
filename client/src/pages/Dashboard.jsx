@@ -39,41 +39,18 @@ const Dashboard = () => {
     setSearchParams({}); // Switch back to main view
   };
 
+  const hasData = tableData.length > 1;
+
   const renderContent = () => {
     switch (currentTab) {
       case 'history':
         return <UploadHistory onSelectFile={handleSelectFile} />;
       case 'charts':
-        return tableData.length > 1 ? (
-          <DataChart ref={chartRef} tableData={tableData} />
-        ) : (
-          <div className="bg-white/80 rounded-lg shadow p-6 text-center">
-            <p className="text-gray-600">Upload a file first to view charts</p>
-          </div>
-        );
+        return null;
       case 'download':
         return <DownloadTab chartRef={chartRef} />;
       default:
-        return (
-          <>
-            {tableData.length > 0 && (
-              <div className="overflow-x-auto mt-6 bg-white/80 rounded-lg shadow p-4">
-                <table className="min-w-full text-sm">
-                  <tbody>
-                    {tableData.map((row, i) => (
-                      <tr key={i}>
-                        {row.map((cell, j) => (
-                          <td key={j} className="border px-2 py-1">{cell}</td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-            {tableData.length > 1 && <DataChart ref={chartRef} tableData={tableData} />}
-          </>
-        );
+        return null;
     }
   };
 
@@ -113,7 +90,38 @@ const Dashboard = () => {
           {currentTab === '' && (
             <h3 className="text-lg font-bold text-white mb-4 drop-shadow">Your Dashboard</h3>
           )}
+          
+          {/* Render tab-specific content */}
           {renderContent()}
+
+          {/* Always render the data table if data exists and we are on the main tab */}
+          {hasData && currentTab === '' && (
+            <div className="overflow-x-auto mt-6 bg-white/80 rounded-lg shadow p-4">
+              <table className="min-w-full text-sm">
+                <tbody>
+                  {tableData.map((row, i) => (
+                    <tr key={i}>
+                      {row.map((cell, j) => (
+                        <td key={j} className="border px-2 py-1">{cell}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Always render chart if data exists, but hide it based on the current tab */}
+          <div className={(hasData && (currentTab === '' || currentTab === 'charts')) ? 'block' : 'hidden'}>
+            {hasData && <DataChart ref={chartRef} tableData={tableData} />}
+          </div>
+          
+          {/* A message for the charts tab when there's no data */}
+          {currentTab === 'charts' && !hasData && (
+            <div className="bg-white/80 rounded-lg shadow p-6 text-center">
+              <p className="text-gray-600">Upload a file first to view charts</p>
+            </div>
+          )}
         </div>
         {/* Always render FileUpload component (hidden when not needed) */}
         <div className="hidden">

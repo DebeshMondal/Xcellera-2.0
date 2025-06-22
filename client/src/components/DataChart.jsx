@@ -28,6 +28,15 @@ const chartTypes = [
   { label: 'Line', value: 'line' },
 ];
 
+const cleanAndParseFloat = (value) => {
+  if (typeof value === 'number') return value;
+  if (typeof value !== 'string') return NaN;
+  // Remove currency symbols, commas, whitespace, etc. and then parse.
+  const cleanedValue = value.replace(/[^0-9.-]+/g, "");
+  if (cleanedValue === '') return NaN;
+  return parseFloat(cleanedValue);
+};
+
 const DataChart = React.forwardRef(({ tableData }, ref) => {
   if (!tableData || tableData.length < 2) return null;
 
@@ -47,32 +56,57 @@ const DataChart = React.forwardRef(({ tableData }, ref) => {
     getChart: () => chartRef.current,
   }));
 
-  // Data validation for Y-axis
-  const yValues = rows.map(row => Number(row[yIndex]));
-  const hasValidNumericYData = yValues.every(val => !isNaN(val));
+  // Attempt to parse both columns to determine their type
+  const xValuesRaw = rows.map(row => row[xIndex]);
+  const yValuesRaw = rows.map(row => row[yIndex]);
 
-  if (!hasValidNumericYData) {
-    return (
-      <div className="bg-white/80 rounded-lg shadow p-6 mt-8 text-center text-red-600">
-        <p className="font-semibold mb-2">Error: Invalid data for Y-axis.</p>
-        <p>Please ensure the selected Y-axis column contains only numeric values.</p>
-        <p className="text-sm text-gray-500 mt-2">Example: '10', '25.5', '100' (not 'Ten', '$10', or empty cells)</p>
-      </div>
-    );
-  }
+  const xValuesCleaned = xValuesRaw.map(cleanAndParseFloat);
+  const yValuesCleaned = yValuesRaw.map(cleanAndParseFloat);
 
-  const chartData = {
-    labels: rows.map(row => row[xIndex]),
-    datasets: [
-      {
+  const isXNumeric = xValuesCleaned.every(v => !isNaN(v));
+  const isYNumeric = yValuesCleaned.every(v => !isNaN(v));
+
+  let chartData;
+  const options = {
+    responsive: true,
+    plugins: { legend: { display: true } },
+    indexAxis: 'x', // Default to vertical bars
+  };
+
+  if (isYNumeric) {
+    // Standard case: Y-axis is numeric. X-axis is categorical.
+    chartData = {
+      labels: xValuesRaw,
+      datasets: [{
         label: yCol,
-        data: yValues, // Use the validated numeric values here
+        data: yValuesCleaned,
         backgroundColor: 'rgba(59, 130, 246, 0.5)',
         borderColor: 'rgba(59, 130, 246, 1)',
         borderWidth: 2,
-      },
-    ],
-  };
+      }],
+    };
+  } else if (isXNumeric) {
+    // Flipped case: X-axis is numeric, Y-axis is categorical.
+    options.indexAxis = 'y'; // Make it a horizontal bar chart
+    chartData = {
+      labels: yValuesRaw, // Use the text labels for the y-axis
+      datasets: [{
+        label: xCol, // The numeric data is now the main label
+        data: xValuesCleaned,
+        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+        borderColor: 'rgba(59, 130, 246, 1)',
+        borderWidth: 2,
+      }],
+    };
+  } else {
+    // Neither axis is consistently numeric.
+    return (
+      <div className="bg-white/80 rounded-lg shadow p-6 mt-8 text-center text-red-600">
+        <p className="font-semibold mb-2">Chart Error: Invalid Data</p>
+        <p>Please ensure at least one of the selected axes contains numeric data.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white/80 rounded-lg shadow p-6 mt-8">
@@ -97,9 +131,9 @@ const DataChart = React.forwardRef(({ tableData }, ref) => {
         </div>
       </div>
       {chartType === 'bar' ? (
-        <Bar ref={chartRef} data={chartData} options={{ responsive: true, plugins: { legend: { display: true } } }} />
+        <Bar ref={chartRef} data={chartData} options={options} />
       ) : (
-        <Line ref={chartRef} data={chartData} options={{ responsive: true, plugins: { legend: { display: true } } }} />
+        <Line ref={chartRef} data={chartData} options={options} />
       )}
     </div>
   );
