@@ -22,6 +22,9 @@ mongoose.connect(MONGODB_URI)
 const excelDataRoutes = require('./routes/excelData');
 app.use('/api/excel', excelDataRoutes);
 
+const aiSummarizeRoutes = require('./routes/aiSummarize');
+app.use('/api/ai', aiSummarizeRoutes);
+
 // Basic route
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Xcellera API' });
