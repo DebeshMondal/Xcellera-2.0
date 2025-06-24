@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { Configuration, OpenAIApi } = require('openai');
+const OpenAI = require('openai');
 
 require('dotenv').config();
 
-const openai = new OpenAIApi(new Configuration({
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-}));
+});
 
 // Helper to format table data as a string for the prompt
 function tableToText(headers, rows) {
@@ -25,7 +25,7 @@ router.post('/summarize', async (req, res) => {
     const tableText = tableToText(headers, data);
     const prompt = `You are an expert data analyst. Summarize the following table in clear, concise English. Highlight key trends, outliers, and any interesting insights.\n\nTable:\n${tableText}`;
 
-    const completion = await openai.createChatCompletion({
+    const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [
         { role: 'system', content: 'You are a helpful assistant for data analysis.' },
@@ -35,7 +35,7 @@ router.post('/summarize', async (req, res) => {
       temperature: 0.7,
     });
 
-    const summary = completion.data.choices[0].message.content.trim();
+    const summary = completion.choices[0].message.content.trim();
     res.json({ summary });
   } catch (err) {
     console.error('OpenAI summarization error:', err.response?.data || err.message);
