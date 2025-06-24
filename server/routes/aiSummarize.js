@@ -22,6 +22,10 @@ router.post('/summarize', async (req, res) => {
       return res.status(400).json({ error: 'Missing headers or data' });
     }
 
+    // Mock summary response for development/demo purposes
+    res.json({ summary: "This is a mock summary. The AI feature will be available when an API key is added. stay tuned for updates." });
+    // --- To re-enable OpenAI, restore the code below ---
+    /*
     const tableText = tableToText(headers, data);
     const prompt = `You are an expert data analyst. Summarize the following table in clear, concise English. Highlight key trends, outliers, and any interesting insights.\n\nTable:\n${tableText}`;
 
@@ -37,6 +41,7 @@ router.post('/summarize', async (req, res) => {
 
     const summary = completion.choices[0].message.content.trim();
     res.json({ summary });
+    */
   } catch (err) {
     console.error('OpenAI summarization error:', err.response?.data || err.message);
     res.status(500).json({ error: 'Failed to generate summary.' });
