@@ -19,6 +19,7 @@ const Dashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const fileUploadRef = useRef();
   const chartRef = useRef();
+  const [showAISummary, setShowAISummary] = useState(false);
 
   const currentTab = searchParams.get('tab') || '';
 
@@ -96,19 +97,48 @@ const Dashboard = () => {
 
           {/* Always render the data table if data exists and we are on the main tab */}
           {hasData && currentTab === '' && (
-            <div className="overflow-x-auto mt-6 bg-white/80 rounded-lg shadow p-4">
-              <table className="min-w-full text-sm">
-                <tbody>
-                  {tableData.map((row, i) => (
-                    <tr key={i}>
-                      {row.map((cell, j) => (
-                        <td key={j} className="border px-2 py-1">{cell}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <>
+              <div className="overflow-x-auto mt-6 bg-white/80 rounded-lg shadow p-4">
+                <table className="min-w-full text-sm">
+                  <tbody>
+                    {tableData.map((row, i) => (
+                      <tr key={i}>
+                        {row.map((cell, j) => (
+                          <td key={j} className="border px-2 py-1">{cell}</td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {/* AI Summary Button */}
+              <div className="mt-4 flex flex-col items-center">
+                <button
+                  className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-bold px-8 py-3 rounded-full shadow-lg flex items-center gap-2 transition-transform duration-200 hover:scale-105 mb-2"
+                  onClick={() => setShowAISummary(true)}
+                >
+                  <span className="text-xl">🤖</span>
+                  Summarize with AI
+                </button>
+                {showAISummary && (
+                  <div className="relative mt-4 max-w-xl mx-auto bg-white border-l-4 border-purple-400 shadow-lg p-6 rounded-lg flex items-start">
+                    <span className="mr-3 text-purple-500 text-2xl">🤖</span>
+                    <div className="flex-1 text-gray-800 text-center text-base">
+                      <span className="font-semibold text-purple-700">AI Summary (Preview):</span>
+                      <br />
+                      This is a mock summary. The AI feature will be available when an API key is added. Stay tuned for updates.
+                    </div>
+                    <button
+                      className="absolute top-2 right-3 text-gray-400 hover:text-gray-700 text-lg"
+                      onClick={() => setShowAISummary(false)}
+                      aria-label="Close"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
           )}
 
           {/* Always render chart if data exists, but hide it based on the current tab */}
