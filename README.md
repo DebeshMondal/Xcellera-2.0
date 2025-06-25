@@ -5,7 +5,7 @@ A modern Excel analytics platform built with the MERN stack (MongoDB, Express, R
 ---
 
 ## 🚀 Live Demo
-[View the live app on Vercel](xcellera-2-0-wwo8.vercel.app) 
+[View the live app on Vercel](https://xcellera-2-0-wwo8.vercel.app/) 
 
 > **Note:**
 > The deployed version is **frontend-only**. Data is **not saved** to the backend/database. For full functionality (including data persistence and AI summaries), please run the backend locally as described below.
