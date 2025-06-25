@@ -92,5 +92,5 @@ Replace the `#` in the **Live Demo** section above with your deployed Vercel lin
 
 ---
 
-**Made with ❤️ by [Your Name] & ChatGPT**
+**Made with ❤️ by Debesh**
 
