@@ -70,9 +70,45 @@ npm run dev
 ## 📦 Folder Structure
 ```
 Xcellera/
-  client/    # React frontend
-  server/    # Express backend
+├── client/
+│   ├── index.html
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── public/
+│   └── src/
+│       ├── App.jsx
+│       ├── App.css
+│       ├── index.css
+│       ├── main.jsx
+│       ├── assets/
+│       │   ├── logo.png
+│       │   └── xcellera.png
+│       ├── components/
+│       │   ├── FileUpload.jsx
+│       │   ├── UploadHistory.jsx
+│       │   ├── Loader.jsx
+│       │   ├── DataChart.jsx
+│       │   ├── DownloadTab.jsx
+│       │   └── Navbar.jsx
+│       └── pages/
+│           ├── Dashboard.jsx
+│           ├── Navbar.jsx
+│           ├── SignUp.jsx
+│           ├── SignIn.jsx
+│           ├── Login.jsx
+│           └── Register.jsx
+├── server/
+│   ├── index.js
+│   ├── package.json
+│   ├── models/
+│   │   └── ExcelData.js
+│   └── routes/
+│       ├── aiSummarize.js
+│       └── excelData.js
+└── README.md
 ```
+
+> **Note:** This is a simplified view. Some folders (like `node_modules`, `public`, etc.) are omitted for clarity.
 
 ---
 
