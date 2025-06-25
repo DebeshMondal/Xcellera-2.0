@@ -7,6 +7,9 @@ A modern Excel analytics platform built with the MERN stack (MongoDB, Express, R
 ## 🚀 Live Demo
 [View the live app on Vercel](#) <!-- Replace # with your live link -->
 
+> **Note:**
+> The deployed version is **frontend-only**. Data is **not saved** to the backend/database. For full functionality (including data persistence and AI summaries), please run the backend locally as described below.
+
 ---
 
 ## 📊 Features
@@ -18,6 +21,8 @@ A modern Excel analytics platform built with the MERN stack (MongoDB, Express, R
 - **AI-Powered Data Summaries** (mocked/demo)
 - **Modern, Responsive UI** (Tailwind CSS)
 - **Loading Animations** for smooth UX
+
+> **Note:** Data persistence and AI summaries require running the backend locally.
 
 ---
 
