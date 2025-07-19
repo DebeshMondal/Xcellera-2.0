@@ -1,6 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const ExcelData = require('../models/ExcelData');
+const { ADMIN_EMAILS } = require('../index');
+
+// Simple admin check middleware
+function isAdmin(req, res, next) {
+  const userEmail = req.body.uploadedBy || req.query.uploadedBy || req.headers['x-user-email'];
+  if (ADMIN_EMAILS.includes(userEmail)) {
+    return next();
+  }
+  return res.status(403).json({ message: 'Admin access required.' });
+}
 
 // Get all Excel data
 router.get('/', async (req, res) => {

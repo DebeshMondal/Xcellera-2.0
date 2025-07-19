@@ -25,6 +25,13 @@ app.use('/api/excel', excelDataRoutes);
 const aiSummarizeRoutes = require('./routes/aiSummarize');
 app.use('/api/ai', aiSummarizeRoutes);
 
+// Simple admin email list for demo purposes
+const ADMIN_EMAILS = [
+  'admin@example.com', // Replace with your admin email(s)
+];
+
+module.exports.ADMIN_EMAILS = ADMIN_EMAILS;
+
 // Basic route
 app.get('/', (req, res) => {
   res.json({ message: 'Welcome to Xcellera API' });
