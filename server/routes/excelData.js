@@ -1,15 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const ExcelData = require('../models/ExcelData');
-const { ADMIN_EMAILS } = require('../index');
 
-// Simple admin check middleware
+// --- ADMIN MIDDLEWARE ---
+const adminEmails = [
+  'admin@example.com', // Replace with your admin emails
+];
 function isAdmin(req, res, next) {
-  const userEmail = req.body.uploadedBy || req.query.uploadedBy || req.headers['x-user-email'];
-  if (ADMIN_EMAILS.includes(userEmail)) {
+  // Clerk user info is expected in req.user (set by auth middleware)
+  // For now, check req.headers["x-user-email"] for simplicity
+  const userEmail = req.headers["x-user-email"];
+  if (adminEmails.includes(userEmail)) {
     return next();
   }
-  return res.status(403).json({ message: 'Admin access required.' });
+  return res.status(403).json({ error: 'Admin access required' });
 }
 
 // Get all Excel data
@@ -65,6 +69,16 @@ router.delete('/:id', async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+// ADMIN: Get all uploads (admin only)
+router.get('/admin/all', isAdmin, async (req, res) => {
+  try {
+    const uploads = await ExcelData.find().sort({ createdAt: -1 });
+    res.json(uploads);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch uploads' });
   }
 });
 

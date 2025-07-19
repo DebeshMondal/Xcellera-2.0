@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import SignInPage from './pages/SignIn';
 import SignUpPage from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
@@ -9,7 +9,7 @@ import Navbar from './components/Navbar';
 
 function App() {
   return (
-    <Router>
+    <>
       <Navbar />
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" />} />
@@ -29,7 +29,7 @@ function App() {
           }
         />
       </Routes>
-    </Router>
+    </>
   );
 }
 

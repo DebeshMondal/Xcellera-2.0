@@ -7,6 +7,7 @@ const Navbar = () => {
   const { signOut } = useClerk();
   const { user } = useUser();
   const navigate = useNavigate();
+  const adminEmail = 'debeshmondal05@gmail.com'; // Set your admin email here
 
   const handleLogout = () => {
     signOut();
@@ -22,6 +23,9 @@ const Navbar = () => {
         <NavLink to="/dashboard?tab=charts" className={({isActive}) => isActive ? 'ml-4 px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold transition' : 'ml-4 px-3 py-1 rounded-full text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition'}>Chart Visualization</NavLink>
         <NavLink to="/dashboard?tab=history" className={({isActive}) => isActive ? 'ml-4 px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold transition' : 'ml-4 px-3 py-1 rounded-full text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition'}>Upload History</NavLink>
         <NavLink to="/dashboard?tab=download" className={({isActive}) => isActive ? 'ml-4 px-3 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold transition' : 'ml-4 px-3 py-1 rounded-full text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition'}>Download Charts</NavLink>
+        {user?.primaryEmailAddress?.emailAddress === adminEmail && (
+          <a href="/admin" className="admin-btn">Admin Panel</a>
+        )}
       </div>
       <div className="flex items-center gap-4">
         <SignedIn>
